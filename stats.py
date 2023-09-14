@@ -5,7 +5,7 @@ import seaborn as sns
 
 def qualitative_summary(df, cname):
     """
-    Creates a qualitative summary of the column cname of the dataframe df.
+    Creates a qualitative summary, bar plot and pie chart of the column cname of the dataframe df.
 
     Parameters
     ----------
