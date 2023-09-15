@@ -27,6 +27,8 @@ def qualitative_summary(df, cname):
 
     sns.barplot(x=cname, y='Frequency', data=frequency, ax=ax[0])
     ax[0].set_title("Frequency of " + cname)
+    #rotate x-axis labels
+    ax[0].set_xticklabels(ax[0].get_xticklabels(),rotation=45)
 
     ax[1].pie(frequency['Frequency'], labels=frequency[cname], autopct='%1.1f%%')
     ax[1].set_title("Relative Frequency of " + cname)
