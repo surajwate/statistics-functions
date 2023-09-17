@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from collections import Counter
 
 def qualitative_summary(df, cname):
     """
@@ -62,4 +63,46 @@ def two_var_qualitative(df, var1, var2):
         ax[i].set_xticklabels(ax[i].get_xticklabels(),rotation=45)
         ax[i].title.set_text(f"Relative Frequency of {var2} for {var1} = {df[var1].unique()[i]}")
 
+    plt.show()
+
+
+def dotplot(df, var):
+    """
+    Create a dotplot of the column var of the dataframe df.
+
+    Parameters
+    ----------
+    df : pandas dataframe
+        The dataframe to be analyzed
+    var : string
+        The name of the column to be analyzed
+
+    """
+    # Count the frequency of each unique value in the column var
+    data_counts = Counter(df[var])
+
+    # Separate the values and their frequencies
+    values = list(data_counts.keys())
+    counts = list(data_counts.values())
+
+    # Create a dotplot
+    plt.figure(figsize=(10, 2))  # Set the size of the figure
+
+    for i in range(len(values)):
+        x = [values[i]] * counts[i] # Create a list of values[i] repeated counts[i] times
+        y = list(range(1, counts[i] + 1)) # Create a list from 1 to counts[i]
+        plt.scatter(x, y)
+
+    # Add labels and title
+    plt.xlabel(var)
+    plt.title(f'Dotplot of {var}')
+
+    # Customize x-axis ticks
+    plt.xticks(np.arange(min(values), max(values)))
+
+    # Customize y-axis ticks
+    plt.yticks(range(0, max(counts) + 2))
+    plt.yticks([]) # Hide the y-axis ticks
+
+    plt.tight_layout()
     plt.show()
