@@ -106,3 +106,86 @@ def dotplot(df, var):
 
     plt.tight_layout()
     plt.show()
+
+
+
+def histogram_overlap(df, target, var, num_bins=10):
+    """
+    Create a histogram of the column var of the dataframe df for each unique value of the column target.
+
+    Parameters
+    ----------
+    df : pandas dataframe
+        The dataframe to be analyzed
+    target : string
+        The name of the column to be analyzed
+    var : string
+        The name of the column to be analyzed
+    num_bins : int
+        The number of bins to be used in the histogram
+
+    """
+    # Create a list of unique values in the column target
+    target_values = df[target].unique()
+
+    # Create a histogram for each unique value of the column target
+    for value in target_values:
+        plt.hist(df[df[target] == value][var], bins=num_bins, alpha=0.5, label=str(value))
+
+    # Add labels and title
+    plt.xlabel(var)
+    plt.ylabel('Frequency')
+    plt.title(f'Histogram of {var} for each unique value of {target}')
+    plt.legend(loc='upper right')
+
+    plt.tight_layout()
+    plt.show()
+
+
+def histogram_sidebyside(df, target, var, num_bins=10):
+    """
+    Create a side by side histograms of the column var of the dataframe df for each unique value of the column target.
+
+    Parameters
+    ----------
+    df : pandas dataframe
+        The dataframe to be analyzed
+    target : string
+        The name of the target column to be analyzed (categorical variable)
+    var : string
+        The name of the variable column to be analyzed
+    num_bins : int
+        The number of bins to be used in the histogram
+
+    """
+    # Separate data by roles
+    categories = df[target].unique()
+    category_data = {cat: df[df[target] == cat][var] for cat in categories}
+
+    # Determine the maximum range of values between roles
+    max_range = max(max(values) for values in category_data.values()) - min(min(values) for values in category_data.values())
+
+    # Calculate the bin width based on the desired number of bins
+    bin_width = max_range / num_bins
+
+    # Create bins
+    bins = [i * bin_width + min(min(values) for values in category_data.values()) for i in range(num_bins + 1)]
+
+    # Create subplots with a shared y-axis
+    num_roles = len(categories)
+    fig, axes = plt.subplots(nrows=1, ncols=num_roles, figsize=(12, 5), sharey=True)
+
+    for i, cat in enumerate(categories):
+        ax = axes[i]
+        ax.hist(category_data[cat], bins=bins, alpha=0.5, label=str(cat))
+        ax.set_xlabel(var)
+        ax.set_ylabel('Frequency')
+        ax.set_title(f'Histogram of {var} for {target} = {cat}')
+
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == '__main__':
+    print('This is a module for analyzing data. Please import it to use it.')
+
