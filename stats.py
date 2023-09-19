@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from collections import Counter
+from tabulate import tabulate
 
 def qualitative_summary(df, cname):
     """
@@ -189,3 +190,58 @@ def histogram_sidebyside(df, target, var, num_bins=10):
 if __name__ == '__main__':
     print('This is a module for analyzing data. Please import it to use it.')
 
+
+def numerical_summary(df, cname):
+    """
+    Creates a numerical summary of the column cname of the dataframe df.
+
+    Parameters
+    ----------
+    df : pandas dataframe
+        The dataframe to be analyzed
+    cname : string
+        The name of the column to be analyzed
+
+    """
+    # Extract the column data
+    data = df[cname]
+
+    # Calculate statistics
+    median = data.median()
+    mean = data.mean()
+    std = data.std()
+
+    # Create a summary table
+    summary_table = [['Median', median],['Mean', mean], ['Standard Deviation', std]]
+
+    # Define table headers
+    headers = ['Measure', 'Value']
+
+    # Print the summary table
+    print(tabulate(summary_table, headers, tablefmt="fancy_grid"))
+
+    # Create a histogram
+    sns.histplot(data=df, x=cname, kde=True)
+
+    # Draw measure lines
+    plt.axvline(median, color='violet', linestyle='dashed', linewidth=1.25, label='Median')
+    plt.axvline(mean, color='blue', linestyle='dashed', linewidth=1.25, label='Mean')
+
+    # Draw standard deviation lines
+    plt.axvline(mean + std, color='darkgreen', linestyle='dashed', linewidth=1, label='1 Std Dev')
+    plt.axvline(mean - std, color='darkgreen', linestyle='dashed', linewidth=1)
+
+    plt.axvline(mean + (2* std), color='lime', linestyle='dashed', linewidth=0.75, label='2 Std Dev')
+    plt.axvline(mean - (2* std), color='lime', linestyle='dashed', linewidth=0.75)
+
+    plt.axvline(mean + (3* std), color='aquamarine', linestyle='dashed', linewidth=0.5, label='3 Std Dev')
+    plt.axvline(mean - (3* std), color='aquamarine', linestyle='dashed', linewidth=0.5)
+
+    # Add labels and title
+    plt.xlabel(cname)
+    plt.ylabel('Frequency')
+    plt.title(f'Histogram of {cname}')
+    plt.legend(loc='upper right')
+
+    plt.tight_layout()
+    plt.show()
