@@ -187,13 +187,10 @@ def histogram_sidebyside(df, target, var, num_bins=10):
     plt.show()
 
 
-if __name__ == '__main__':
-    print('This is a module for analyzing data. Please import it to use it.')
-
-
 def numerical_summary(df, cname):
     """
-    Creates a numerical summary of the column cname of the dataframe df.
+    Creates a detailed numerical summary of the column cname of the dataframe df.
+    Includes additional statistics and a box plot alongside the histogram.
 
     Parameters
     ----------
@@ -201,8 +198,10 @@ def numerical_summary(df, cname):
         The dataframe to be analyzed
     cname : string
         The name of the column to be analyzed
-
     """
+
+    print(f"Summary Statistics for {cname}\n" + "-"*40)
+    
     # Extract the column data
     data = df[cname]
 
@@ -210,9 +209,25 @@ def numerical_summary(df, cname):
     median = data.median()
     mean = data.mean()
     std = data.std()
+    min_val = data.min()
+    max_val = data.max()
+    q1 = data.quantile(0.25)
+    q3 = data.quantile(0.75)
+    iqr = q3 - q1
+    skewness = data.skew()
 
     # Create a summary table
-    summary_table = [['Median', median],['Mean', mean], ['Standard Deviation', std]]
+    summary_table = [
+        ['Mean', mean],
+        ['Median', median],
+        ['Standard Deviation', std],
+        ['Minimum', min_val],
+        ['25th Percentile', q1],
+        ['75th Percentile', q3],
+        ['Interquartile Range', iqr],
+        ['Maximum', max_val],
+        ['Skewness', skewness]
+    ]
 
     # Define table headers
     headers = ['Measure', 'Value']
@@ -220,28 +235,37 @@ def numerical_summary(df, cname):
     # Print the summary table
     print(tabulate(summary_table, headers, tablefmt="fancy_grid"))
 
-    # Create a histogram
-    sns.histplot(data=df, x=cname, kde=True)
+    # Create a figure with subplots
+    fig, ax = plt.subplots(1, 2, figsize=(16, 6))
 
-    # Draw measure lines
-    plt.axvline(median, color='violet', linestyle='dashed', linewidth=1.25, label='Median')
-    plt.axvline(mean, color='blue', linestyle='dashed', linewidth=1.25, label='Mean')
+    # Histogram with KDE
+    sns.histplot(data, kde=True, ax=ax[0])
+    ax[0].axvline(median, color='violet', linestyle='dashed', linewidth=1.25, label='Median')
+    ax[0].axvline(mean, color='blue', linestyle='dashed', linewidth=1.25, label='Mean')
 
     # Draw standard deviation lines
-    plt.axvline(mean + std, color='darkgreen', linestyle='dashed', linewidth=1, label='1 Std Dev')
-    plt.axvline(mean - std, color='darkgreen', linestyle='dashed', linewidth=1)
+    ax[0].axvline(mean + std, color='darkgreen', linestyle='dashed', linewidth=1, label='1 Std Dev')
+    ax[0].axvline(mean - std, color='darkgreen', linestyle='dashed', linewidth=1)
 
-    plt.axvline(mean + (2* std), color='lime', linestyle='dashed', linewidth=0.75, label='2 Std Dev')
-    plt.axvline(mean - (2* std), color='lime', linestyle='dashed', linewidth=0.75)
+    ax[0].axvline(mean + (2* std), color='lime', linestyle='dashed', linewidth=0.75, label='2 Std Dev')
+    ax[0].axvline(mean - (2* std), color='lime', linestyle='dashed', linewidth=0.75)
 
-    plt.axvline(mean + (3* std), color='aquamarine', linestyle='dashed', linewidth=0.5, label='3 Std Dev')
-    plt.axvline(mean - (3* std), color='aquamarine', linestyle='dashed', linewidth=0.5)
+    ax[0].axvline(mean + (3* std), color='aquamarine', linestyle='dashed', linewidth=0.5, label='3 Std Dev')
+    ax[0].axvline(mean - (3* std), color='aquamarine', linestyle='dashed', linewidth=0.5)
 
-    # Add labels and title
-    plt.xlabel(cname)
-    plt.ylabel('Frequency')
-    plt.title(f'Histogram of {cname}')
-    plt.legend(loc='upper right')
+    ax[0].set_title(f'Histogram of {cname}')
+    ax[0].set_xlabel(cname)
+    ax[0].set_ylabel('Frequency')
+    ax[0].legend()
+
+    # Box Plot
+    sns.boxplot(x=data, ax=ax[1])
+    ax[1].set_title(f'Box Plot of {cname}')
+    ax[1].set_xlabel(cname)
 
     plt.tight_layout()
     plt.show()
+
+
+if __name__ == '__main__':
+    print('This is a module for analyzing data. Please import it to use it.')
